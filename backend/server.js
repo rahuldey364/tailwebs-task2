@@ -4,6 +4,7 @@ const connectDB = require("../backend/database/connection")
 const dotenv = require("dotenv")
 const app = express()
 const route = require("../backend/routes/route")
+const path = require("path")
 dotenv.config()
 
 connectDB()
@@ -27,6 +28,18 @@ app.use(express.urlencoded({ extended: true }));
 
 
 app.use("/", route)
+
+const __dirname1 = path.resolve()
+if(process.env.NODE_ENV === "production"){
+    app.use(express.static(path.join(__dirname1,"/frontend/build")))
+    app.get("*",(req,res) => {
+        res.sendFile(path.resolve(__dirname1,"frontend","build","index.html"))
+    })
+}else{
+    app.get("/",(req,res) => {
+         res.send("api running successfully")
+    })
+}
 
 const server = app.listen(PORT, () => {
     console.log(`app running on ${PORT}`)
